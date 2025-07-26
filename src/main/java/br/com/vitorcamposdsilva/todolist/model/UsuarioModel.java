@@ -17,10 +17,10 @@ public class UsuarioModel {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    @Column(name = "usuario")
+    @Column(name = "usuario", unique = true)
     private String nome;
     private String email;
-    private String senha;
+    private  String senha;
 
     @CreationTimestamp
     private LocalDateTime criadoEm;
