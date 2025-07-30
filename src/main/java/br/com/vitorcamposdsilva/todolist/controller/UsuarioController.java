@@ -1,5 +1,6 @@
 package br.com.vitorcamposdsilva.todolist.controller;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.vitorcamposdsilva.todolist.Repository.IUsuarioRepository;
 import br.com.vitorcamposdsilva.todolist.model.UsuarioModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public class UsuarioController {
         if (usuarioExistente != null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já cadastrado!");
         }
-
+        var senhaHashrd = BCrypt.withDefaults().hashToString(12,usuarioModel.getSenha().toCharArray());
+        usuarioModel.setSenha(senhaHashrd);
         var usuarioCriado = this.usuarioRepository.save(usuarioModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCriado);
     }
