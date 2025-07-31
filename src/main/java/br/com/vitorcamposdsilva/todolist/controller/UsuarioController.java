@@ -22,8 +22,8 @@ public class UsuarioController {
         if (usuarioExistente != null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já cadastrado!");
         }
-        var senhaHashrd = BCrypt.withDefaults().hashToString(12,usuarioModel.getSenha().toCharArray());
-        usuarioModel.setSenha(senhaHashrd);
+        var senhaHash = BCrypt.withDefaults().hashToString(12,usuarioModel.getSenha().toCharArray());
+        usuarioModel.setSenha(senhaHash);
         var usuarioCriado = this.usuarioRepository.save(usuarioModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCriado);
     }
