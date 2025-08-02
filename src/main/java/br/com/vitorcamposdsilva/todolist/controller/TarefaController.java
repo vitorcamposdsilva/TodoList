@@ -4,8 +4,11 @@ import br.com.vitorcamposdsilva.todolist.Repository.ITarefaRepository;
 import br.com.vitorcamposdsilva.todolist.model.TarefaModel;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -16,7 +19,7 @@ public class TarefaController {
     private ITarefaRepository tarefaRepository;
 
     @PostMapping("/cadastrar")
-    public TarefaModel cadastrar(@RequestBody TarefaModel tarefaModel, HttpServletRequest request) {
+    public ResponseEntity cadastrar(@RequestBody TarefaModel tarefaModel, HttpServletRequest request) {
 
         UUID idUsuario = (UUID) request.getAttribute("idUsuario");
         if (idUsuario == null) {
@@ -24,6 +27,18 @@ public class TarefaController {
         }
 
         tarefaModel.setIdUsuario(idUsuario);
-        return tarefaRepository.save(tarefaModel);
+
+        var dataAtual = LocalDateTime.now();
+
+        if (dataAtual.isAfter(tarefaModel.getDataInicio()) || dataAtual.isAfter(tarefaModel.getDataFim())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início /data de término deve ser maior que a data atual");
+        }
+
+        if (tarefaModel.getDataInicio().isAfter(tarefaModel.getDataFim())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início deve ser menor do que a data de término");
+        }
+
+        tarefaRepository.save(tarefaModel);
+        return ResponseEntity.status(HttpStatus.OK).body(tarefaModel);
     }
 }
