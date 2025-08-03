@@ -2,6 +2,7 @@ package br.com.vitorcamposdsilva.todolist.controller;
 
 import br.com.vitorcamposdsilva.todolist.Repository.ITarefaRepository;
 import br.com.vitorcamposdsilva.todolist.model.TarefaModel;
+import br.com.vitorcamposdsilva.todolist.util.Util;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,5 +49,15 @@ public class TarefaController {
         var idUsuario = request.getAttribute("idUsuario");
         var tarefas = this.tarefaRepository.findByIdUsuario((UUID) idUsuario);
         return tarefas;
+    }
+
+    @PutMapping("/editar/{id}")
+    public TarefaModel editarTarefa(@RequestBody TarefaModel tarefaModel, HttpServletRequest request, @PathVariable UUID id){
+        var idUsuario = request.getAttribute("idUsuario");
+        var  tarefa = this.tarefaRepository.findById(id).orElse(null);
+
+        Util.copiarPropriedadeNula(tarefaModel,tarefa);
+
+        return this.tarefaRepository.save(tarefa);
     }
 }
