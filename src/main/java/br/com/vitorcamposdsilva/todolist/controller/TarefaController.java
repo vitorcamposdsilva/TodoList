@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,8 +31,8 @@ public class TarefaController {
 
         var dataAtual = LocalDateTime.now();
 
-        if (dataAtual.isAfter(tarefaModel.getDataInicio()) || dataAtual.isAfter(tarefaModel.getDataFim())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início /data de término deve ser maior que a data atual");
+        if (dataAtual.isAfter(tarefaModel.getDataInicio())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início e data de término deve ser maior que a data atual");
         }
 
         if (tarefaModel.getDataInicio().isAfter(tarefaModel.getDataFim())){
@@ -40,5 +41,12 @@ public class TarefaController {
 
         tarefaRepository.save(tarefaModel);
         return ResponseEntity.status(HttpStatus.OK).body(tarefaModel);
+    }
+
+    @GetMapping("/listar")
+    public List<TarefaModel> listarTarefa(HttpServletRequest request){
+        var idUsuario = request.getAttribute("idUsuario");
+        var tarefas = this.tarefaRepository.findByIdUsuario((UUID) idUsuario);
+        return tarefas;
     }
 }
