@@ -52,12 +52,21 @@ public class TarefaController {
     }
 
     @PutMapping("/editar/{id}")
-    public TarefaModel editarTarefa(@RequestBody TarefaModel tarefaModel, HttpServletRequest request, @PathVariable UUID id){
+    public ResponseEntity editarTarefa(@RequestBody TarefaModel tarefaModel, HttpServletRequest request, @PathVariable UUID id){
         var idUsuario = request.getAttribute("idUsuario");
         var  tarefa = this.tarefaRepository.findById(id).orElse(null);
 
+        if (tarefa == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Tarefa não encontrada.");
+        }
+
+        if (!tarefa.getIdUsuario().equals(idUsuario)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("O usuário não tem permissão para alterar esta tarefa.");
+        }
         Util.copiarPropriedadeNula(tarefaModel,tarefa);
 
-        return this.tarefaRepository.save(tarefa);
+        return ResponseEntity.ok().body(this.tarefaRepository.save(tarefa));
     }
 }
