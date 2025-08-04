@@ -31,4 +31,11 @@ public class TarefaModel {
 
     @CreationTimestamp
     private LocalDateTime criadoEm;
+
+    public void setTitulo (String titulo) throws Exception {
+        if (titulo.length() > 50){
+            throw new Exception("O campo título deve conter no máximo 50 caracteres");
+        }
+        this.titulo = titulo;
+    }
 }
